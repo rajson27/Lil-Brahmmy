@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+:root {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  /* Custom UB Brand Colors */
+  --ub-maroon: #800000;
+  --ub-gold: #FFD700;
+  --ub-soft-gray: #F8F9FD;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--ub-soft-gray); /* */
+  color: #1a1a1a;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar for that "SaaS" look from your reference */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ub-maroon);
+}
+
+/* Smooth transitions for that "alive" feel */
+* {
+  transition: border-color 0.2s, background-color 0.2s, transform 0.2s; /* */
+}
+
+/* Glassmorphism effect for cards if needed */
+.glass-card {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
