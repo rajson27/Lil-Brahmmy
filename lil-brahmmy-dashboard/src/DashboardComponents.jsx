@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { 
   BookOpen, Sparkles, BrainCircuit, FileUp, CheckCircle, Users, Plus, 
   Trash2, Edit3, ChevronLeft, Loader2, Globe, CheckCircle2, X, AlertTriangle,
-  AlertCircle, TrendingUp
+  AlertCircle, TrendingUp, Award, Clock
 } from 'lucide-react';
-import { BarChart, Bar, ResponsiveContainer, XAxis, Tooltip, CartesianGrid, Cell } from 'recharts';
+import { BarChart, Bar, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, Cell } from 'recharts';
 import { masteryData } from './DashboardConstants';
 
-// --- MOCK DATA FOR STUDENT ANALYTICS ---
-const studentPerformanceData = [
-  { lesson: 'Cell Structure', score: 95, status: 'Success' },
-  { lesson: 'Mitosis', score: 42, status: 'Failed' },
-  { lesson: 'DNA Replication', score: 88, status: 'Success' },
-  { lesson: 'Genetics', score: 35, status: 'Failed' },
-  { lesson: 'Ecosystems', score: 92, status: 'Success' },
+// --- MOCK DATA FOR STUDENT MATH ANALYTICS (Highs and Lows) ---
+const mathTopicData = [
+  { topic: 'Addition', score: 98, status: 'Mastered' },
+  { topic: 'Geometry', score: 92, status: 'Mastered' },
+  { topic: 'Algebra', score: 45, status: 'Needs Review' }, // Low topic
+  { topic: 'Fractions', score: 85, status: 'Proficient' },
+  { topic: 'Division', score: 38, status: 'Critical' },   // Low topic
 ];
 
 // --- REUSABLE STAT CARD ---
@@ -109,35 +109,20 @@ export const DashboardHome = () => {
             <div className="p-10 text-center">
               {modalStep === 'loading' ? (
                 <div className="space-y-6">
-                  <div className="flex justify-center">
-                    <Loader2 className="size-16 text-[#800000] animate-spin" />
-                  </div>
+                  <div className="flex justify-center"><Loader2 className="size-16 text-[#800000] animate-spin" /></div>
                   <h3 className="text-2xl font-black text-[#800000] uppercase italic tracking-tighter">Integrating...</h3>
-                  <p className="text-gray-400 font-bold text-xs uppercase tracking-widest leading-relaxed">
-                    Synchronizing lesson assets <br/> with the Unity environment.
-                  </p>
                 </div>
               ) : (
                 <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4">
-                  <div className="flex justify-center">
-                    <div className="bg-green-100 p-4 rounded-full shadow-inner">
-                      <CheckCircle2 className="size-16 text-green-600" />
-                    </div>
-                  </div>
+                  <div className="flex justify-center"><div className="bg-green-100 p-4 rounded-full shadow-inner"><CheckCircle2 className="size-16 text-green-600" /></div></div>
                   <div className="space-y-4">
                     <h3 className="text-2xl font-black text-gray-900 uppercase italic tracking-tighter">Sync Complete</h3>
-                    <p className="text-gray-500 font-bold text-xs uppercase tracking-widest">Local stream is now active at:</p>
                     <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100 flex items-center justify-center gap-3">
                       <Globe className="text-[#800000]" size={16} />
                       <span className="font-mono text-sm font-black text-[#800000]">http://localhost:3000</span>
                     </div>
                   </div>
-                  <button 
-                    onClick={closeModal}
-                    className="w-full bg-[#800000] text-yellow-400 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-red-900 transition-colors"
-                  >
-                    Return to Dashboard
-                  </button>
+                  <button onClick={closeModal} className="w-full bg-[#800000] text-yellow-400 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-red-900 transition-colors">Return to Dashboard</button>
                 </div>
               )}
             </div>
@@ -149,7 +134,7 @@ export const DashboardHome = () => {
   );
 };
 
-// --- MY CLASSES VIEW (UPDATED LOGIC) ---
+// --- MY CLASSES VIEW ---
 export const MyClassesView = () => {
   const [selectedSection, setSelectedSection] = useState(null);
   const [selectedStudent, setSelectedStudent] = useState(null); 
@@ -162,7 +147,7 @@ export const MyClassesView = () => {
             { id: 1001, name: "Marcus Phoenix", email: "m.phoenix@university.edu", performance: "Excellent" },
             { id: 1002, name: "Sarah Connor", email: "s.connor@university.edu", performance: "Good" },
             { id: 1003, name: "John Wick", email: "j.wick@university.edu", performance: "Average" },
-            { id: 1004, name: "hi", email: "2100810@university.edu", performance: "Average" },
+            { id: 1004, name: "Hi", email: "2100810@university.edu", performance: "Average" },
           ]
         },
         { id: 102, name: "Section B", studentsCount: 22, status: "ACTIVE", roster: [] }
@@ -239,67 +224,114 @@ export const MyClassesView = () => {
     setShowDeleteModal(false);
   };
 
-  // --- RENDERING LOGIC (ORDER IS CRITICAL) ---
-
-  // 1. SHOW ANALYTICS (Highest Priority)
+  // --- ANALYTICS VIEW (PRIORITY RENDER) ---
   if (selectedStudent) {
     return (
       <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-300">
         <button onClick={() => setSelectedStudent(null)} className="flex items-center gap-2 text-[#800000] font-black uppercase text-xs hover:underline">
           <ChevronLeft size={16} /> Back to Roster
         </button>
-        <div className="flex justify-between items-end">
-          <div>
-            <h2 className="text-4xl font-black text-gray-900 italic uppercase tracking-tighter">{selectedStudent.name}</h2>
-            <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest">{selectedStudent.email}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-gray-400 font-black text-[10px] uppercase">Average Mastery</p>
-            <p className="text-4xl font-black text-[#800000]">74%</p>
-          </div>
-        </div>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-white rounded-[35px] border border-gray-100 shadow-sm overflow-hidden">
-            <div className="p-6 border-b border-gray-50 bg-gray-50/50">
-              <h3 className="font-black uppercase italic text-sm text-gray-700">Lesson Mastery Breakdown</h3>
+        <div className="bg-white p-10 rounded-[40px] shadow-sm border border-gray-100">
+          <div className="flex justify-between items-end mb-10">
+            <div className="flex items-center gap-8">
+              <div className="size-24 rounded-[30px] bg-[#800000] text-yellow-400 flex items-center justify-center text-3xl font-black shadow-xl border-4 border-white">
+                {selectedStudent.name.split(' ').map(n => n[0]).join('')}
+              </div>
+              <div>
+                <h2 className="text-4xl font-black text-gray-900 italic uppercase tracking-tighter leading-none">{selectedStudent.name}</h2>
+                <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mt-2">{selectedStudent.email} • Grade 1 Math</p>
+              </div>
             </div>
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b border-gray-50">
-                  <th className="p-5 text-[10px] font-black uppercase text-gray-400">Lesson Topic</th>
-                  <th className="p-5 text-[10px] font-black uppercase text-gray-400">Score</th>
-                  <th className="p-5 text-[10px] font-black uppercase text-gray-400">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {studentPerformanceData.map((item, idx) => (
-                  <tr key={idx} className="border-b border-gray-50">
-                    <td className="p-5 font-bold text-gray-800">{item.lesson}</td>
-                    <td className="p-5 font-black text-[#800000]">{item.score}%</td>
-                    <td className="p-5">
-                      <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase flex items-center gap-1 w-fit ${
-                        item.status === 'Success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
-                      }`}>
-                        {item.status === 'Success' ? <CheckCircle2 size={10} /> : <AlertCircle size={10} />}
-                        {item.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="text-right">
+              <p className="text-gray-400 font-black text-[10px] uppercase">Subject Mastery</p>
+              <p className="text-4xl font-black text-[#800000]">71.6%</p>
+            </div>
           </div>
-          <div className="bg-white p-8 rounded-[35px] border border-gray-100 shadow-sm flex flex-col items-center justify-center">
-             <TrendingUp className="text-gray-200 mb-4" size={48} />
-             <p className="text-gray-400 font-bold uppercase text-[10px] text-center">Unity Analytics <br/> Stream Active</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+             <div className="p-8 bg-red-50 rounded-[35px] border border-red-100 group hover:bg-[#800000] transition-all">
+                <TrendingUp className="text-[#800000] mb-4 group-hover:text-yellow-400" size={24} />
+                <p className="text-[10px] font-black uppercase text-[#800000] mb-1 group-hover:text-red-200">Current Performance</p>
+                <p className="text-2xl font-black text-gray-900 group-hover:text-white">{selectedStudent.performance}</p>
+             </div>
+             <div className="p-8 bg-yellow-50 rounded-[35px] border border-yellow-100">
+                <Award className="text-yellow-600 mb-4" size={24} />
+                <p className="text-[10px] font-black uppercase text-yellow-700 mb-1">Quiz Average</p>
+                <p className="text-2xl font-black text-gray-900">88.4%</p>
+             </div>
+             <div className="p-8 bg-gray-50 rounded-[35px] border border-gray-100">
+                <Clock className="text-gray-400 mb-4" size={24} />
+                <p className="text-[10px] font-black uppercase text-gray-500 mb-1">Attendance</p>
+                <p className="text-2xl font-black text-gray-900">96%</p>
+             </div>
+          </div>
+
+          <div className="pt-10 border-t border-gray-50">
+            <h4 className="font-black uppercase italic text-[#800000] text-sm mb-8 flex items-center gap-2">
+              <div className="w-8 h-[2px] bg-yellow-400"></div> Subject Analytics Breakdown
+            </h4>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+              {/* Visual Analytics Chart */}
+              <div className="h-80 bg-gray-50/50 p-8 rounded-[40px] border border-gray-100">
+                 <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={mathTopicData} layout="vertical" margin={{ left: 20 }}>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#e5e7eb" />
+                      <XAxis type="number" domain={[0, 100]} hide />
+                      <YAxis dataKey="topic" type="category" axisLine={false} tickLine={false} tick={{fill: '#4b5563', fontWeight: 'bold', fontSize: 12}} />
+                      <Tooltip cursor={{fill: 'transparent'}} contentStyle={{borderRadius: '15px', border: 'none'}} />
+                      <Bar dataKey="score" radius={[0, 10, 10, 0]} barSize={25}>
+                        {mathTopicData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.score > 75 ? '#15803d' : entry.score > 50 ? '#eab308' : '#800000'} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                 </ResponsiveContainer>
+              </div>
+
+              {/* Lesson Data Table */}
+              <div className="bg-white rounded-[30px] border border-gray-100 overflow-hidden shadow-sm">
+                <table className="w-full text-left">
+                  <thead className="bg-gray-50/50">
+                    <tr>
+                      <th className="p-4 text-[10px] font-black uppercase text-gray-400">Lesson</th>
+                      <th className="p-4 text-[10px] font-black uppercase text-gray-400">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {mathTopicData.map((item, idx) => (
+                      <tr key={idx} className="border-t border-gray-50">
+                        <td className="p-4 font-bold text-gray-700">{item.topic}</td>
+                        <td className="p-4">
+                          <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase ${
+                            item.score > 75 ? 'bg-green-100 text-green-700' : 
+                            item.score > 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'
+                          }`}>
+                            {item.status} ({item.score}%)
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            
+            <div className="mt-8 p-6 rounded-3xl bg-yellow-50 border border-yellow-100 flex items-center gap-4">
+               <AlertCircle className="text-yellow-600" size={24} />
+               <p className="text-sm font-medium text-yellow-800">
+                 <span className="font-black uppercase text-[10px] mr-2">AI Observation:</span> 
+                 Mastery in <span className="font-black">Addition</span> and <span className="font-black">Geometry</span> is exceptionally strong. Student is currently encountering significant friction in <span className="font-black">Algebra</span> and <span className="font-black">Division</span> modules.
+               </p>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // 2. SHOW ROSTER (Second Priority)
+  // --- ROSTER VIEW ---
   if (selectedSection) {
     return (
       <div className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
@@ -318,13 +350,10 @@ export const MyClassesView = () => {
             </thead>
             <tbody>
               {selectedSection.roster.map(s => (
-                <tr key={s.id} className="border-b border-gray-50 group hover:bg-red-50/50 transition-all">
+                <tr key={s.id} className="border-b border-gray-50 group hover:bg-red-50/20 transition-all">
                   <td 
                     className="p-6 font-bold cursor-pointer text-[#800000] underline decoration-transparent hover:decoration-[#800000] transition-all"
-                    onClick={() => {
-                      console.log("Student Clicked:", s.name);
-                      setSelectedStudent(s);
-                    }} 
+                    onClick={() => setSelectedStudent(s)} 
                   >
                     {s.name}
                   </td>
@@ -343,12 +372,18 @@ export const MyClassesView = () => {
     );
   }
 
-  // 3. DEFAULT VIEW
+  // --- DEFAULT VIEW ---
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-black text-[#800000] uppercase italic tracking-tighter">Class Management</h2>
-        <button onClick={() => openGradeModal('ADD')} className="bg-[#800000] text-yellow-400 px-6 py-3 rounded-2xl font-black text-xs uppercase flex items-center gap-2 shadow-lg">
+        <div>
+          <h2 className="text-3xl font-black text-[#800000] uppercase italic tracking-tighter">Class Management</h2>
+          <p className="text-gray-400 font-bold text-xs uppercase tracking-widest mt-1">Manage your grades and sections</p>
+        </div>
+        <button 
+          onClick={() => openGradeModal('ADD')}
+          className="bg-[#800000] text-yellow-400 px-6 py-3 rounded-2xl font-black text-xs uppercase flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"
+        >
           <Plus size={18} /> Add Grade Level
         </button>
       </div>
@@ -357,16 +392,37 @@ export const MyClassesView = () => {
         {classData.map((gradeObj) => (
           <div key={gradeObj.id} className="bg-white p-8 rounded-[40px] shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-8 border-b border-gray-50 pb-4">
-              <h3 className="text-2xl font-black text-gray-800 uppercase italic">{gradeObj.grade}</h3>
-              <button onClick={() => openSectionModal('ADD', gradeObj.id)} className="bg-yellow-400 text-[#800000] px-4 py-2 rounded-xl font-black text-[10px] uppercase flex items-center gap-2">
+              <div className="flex items-center gap-4">
+                <div className="bg-red-50 text-[#800000] p-3 rounded-2xl"><Users size={24} /></div>
+                <h3 className="text-2xl font-black text-gray-800 uppercase italic">{gradeObj.grade}</h3>
+                <div className="flex gap-1 ml-4">
+                  <button onClick={() => openGradeModal('EDIT', gradeObj)} className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><Edit3 size={16}/></button>
+                  <button onClick={() => openDeleteConfirm('GRADE', gradeObj.id)} className="p-2 text-red-400 hover:text-red-600 rounded-lg"><Trash2 size={16}/></button>
+                </div>
+              </div>
+              <button 
+                onClick={() => openSectionModal('ADD', gradeObj.id)}
+                className="bg-yellow-400 text-[#800000] px-4 py-2 rounded-xl font-black text-[10px] uppercase flex items-center gap-2 hover:shadow-md transition-all"
+              >
                 <Plus size={14} strokeWidth={4} /> Add Section
               </button>
             </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {gradeObj.sections.map((section) => (
-                <div key={section.id} className="p-6 rounded-[30px] border-2 border-gray-100 group">
-                  <span className="text-2xl font-black text-[#800000] block mb-4">{section.name}</span>
-                  <button onClick={() => setSelectedSection(section)} className="w-full py-3 rounded-2xl bg-white border border-gray-100 text-[#800000] text-[10px] font-black uppercase hover:bg-[#800000] hover:text-yellow-400 transition-all">
+                <div key={section.id} className="p-6 rounded-[30px] border-2 border-gray-100 hover:border-yellow-400 hover:bg-yellow-50/20 transition-all relative group">
+                  <div className="flex justify-between items-start mb-4">
+                    <span className="text-2xl font-black text-[#800000] tracking-tighter">{section.name}</span>
+                    <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => openSectionModal('EDIT', gradeObj.id, section)} className="p-2 bg-white shadow-sm border border-gray-100 rounded-lg text-blue-600"><Edit3 size={14}/></button>
+                      <button onClick={() => openDeleteConfirm('SECTION', gradeObj.id, section.id)} className="p-2 bg-white shadow-sm border border-gray-100 rounded-lg text-red-600"><X size={14}/></button>
+                    </div>
+                  </div>
+                  <p className="text-gray-400 font-bold text-[10px] uppercase mb-6">{section.studentsCount} Students Enrolled</p>
+                  <button 
+                    onClick={() => setSelectedSection(section)}
+                    className="w-full py-3 rounded-2xl bg-white border border-gray-100 text-[#800000] text-[10px] font-black uppercase hover:bg-[#800000] hover:text-yellow-400 transition-all"
+                  >
                     View Roster
                   </button>
                 </div>
@@ -379,12 +435,43 @@ export const MyClassesView = () => {
       {showModal && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-[#800000]/40 backdrop-blur-sm" onClick={() => setShowModal(false)} />
-          <div className="bg-white w-full max-w-sm rounded-[30px] shadow-2xl relative z-10 p-8">
-            <h3 className="text-xl font-black text-[#800000] uppercase mb-6">{modalMode === 'ADD' ? 'Create' : 'Edit'} {modalTarget}</h3>
-            <input className="w-full bg-gray-50 p-4 rounded-2xl mb-6 font-bold" value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
-            <div className="flex gap-3">
-              <button onClick={() => setShowModal(false)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black uppercase text-[10px]">Cancel</button>
-              <button onClick={handleSave} className="flex-1 py-4 bg-[#800000] text-yellow-400 rounded-2xl font-black uppercase text-[10px]">Save</button>
+          <div className="bg-white w-full max-w-sm rounded-[30px] shadow-2xl relative z-10 animate-in zoom-in-95 duration-200">
+            <div className="p-8">
+              <h3 className="text-xl font-black text-[#800000] uppercase italic mb-6">
+                {modalMode === 'ADD' ? 'Create' : 'Edit'} {modalTarget === 'GRADE' ? 'Grade Level' : 'Section'}
+              </h3>
+              <input 
+                autoFocus
+                className="w-full bg-gray-50 border-2 border-transparent focus:border-yellow-400 p-4 rounded-2xl outline-none font-bold text-gray-700 mb-6"
+                placeholder={modalTarget === 'GRADE' ? "e.g. GRADE 4" : "e.g. Section D"}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+              />
+              <div className="flex gap-3">
+                <button onClick={() => setShowModal(false)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black uppercase text-[10px] text-gray-500">Cancel</button>
+                <button onClick={handleSave} className="flex-1 py-4 bg-[#800000] text-yellow-400 rounded-2xl font-black uppercase text-[10px] shadow-lg">Save Changes</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-[#800000]/40 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
+          <div className="bg-white w-full max-w-sm rounded-[30px] shadow-2xl relative z-10 animate-in zoom-in-95 duration-200">
+            <div className="p-8 text-center">
+              <div className="bg-red-50 text-red-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle size={32} />
+              </div>
+              <h3 className="text-xl font-black text-gray-900 uppercase italic mb-2">Are you sure?</h3>
+              <p className="text-gray-400 text-xs font-bold uppercase tracking-wide mb-8">
+                Deleting this {modalTarget.toLowerCase()} will remove all associated data permanently.
+              </p>
+              <div className="flex gap-3">
+                <button onClick={() => setShowDeleteModal(false)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black uppercase text-[10px] text-gray-400">Cancel</button>
+                <button onClick={handleDelete} className="flex-1 py-4 bg-red-600 text-white rounded-2xl font-black uppercase text-[10px] shadow-lg">Delete</button>
+              </div>
             </div>
           </div>
         </div>
@@ -435,7 +522,7 @@ export const VaultView = () => {
             <h2 className="text-2xl font-black text-[#800000] italic uppercase tracking-tighter">Course Vault</h2>
             <button 
               onClick={() => { setVaultModalMode('COURSE'); setVaultInputValue(''); setShowVaultModal(true); }} 
-              className="bg-[#800000] text-yellow-400 px-6 py-3 rounded-2xl font-black text-xs uppercase flex items-center gap-2 shadow-lg"
+              className="bg-[#800000] text-yellow-400 px-6 py-3 rounded-2xl font-black text-xs uppercase flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"
             >
               <Plus size={18} /> Add New Subject
             </button>
@@ -457,12 +544,12 @@ export const VaultView = () => {
           </button>
           <div className="flex justify-between items-end">
             <div>
-              <h2 className="text-4xl font-black text-gray-900 italic tracking-tighter uppercase">{selectedCourse.name}</h2>
+              <h2 className="text-4xl font-black text-gray-900 italic uppercase tracking-tighter">{selectedCourse.name}</h2>
               <p className="text-gray-400 font-bold uppercase tracking-widest text-xs mt-2">Class Roster & History</p>
             </div>
             <button 
               onClick={() => { setVaultModalMode('STUDENT'); setVaultInputValue(''); setShowVaultModal(true); }}
-              className="bg-[#800000] text-yellow-400 px-6 py-3 rounded-2xl font-black text-xs uppercase flex items-center gap-2 shadow-lg"
+              className="bg-[#800000] text-yellow-400 px-6 py-3 rounded-2xl font-black text-xs uppercase flex items-center gap-2 shadow-lg hover:scale-105 transition-transform"
             >
               <Plus size={18} /> Enroll Student
             </button>
@@ -502,19 +589,19 @@ export const VaultView = () => {
 
       {showVaultModal && (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-[#800000]/60 backdrop-blur-md" onClick={() => setShowVaultModal(false)} />
-          <div className="bg-white w-full max-w-sm rounded-[40px] shadow-2xl relative z-10 p-10">
+          <div className="absolute inset-0 bg-[#800000]/60 backdrop-blur-md animate-in fade-in duration-200" onClick={() => setShowVaultModal(false)} />
+          <div className="bg-white w-full max-w-sm rounded-[40px] shadow-2xl relative z-10 p-10 animate-in zoom-in-95 duration-200">
             <h3 className="text-2xl font-black text-[#800000] uppercase italic mb-6">{vaultModalMode === 'COURSE' ? 'New Subject' : 'Enroll Student'}</h3>
             <input 
               autoFocus 
-              className="w-full bg-gray-50 p-5 rounded-2xl outline-none font-bold text-gray-700 mb-8" 
+              className="w-full bg-gray-50 border-2 border-transparent focus:border-yellow-400 p-5 rounded-2xl outline-none font-bold text-gray-700 mb-8" 
               placeholder={vaultModalMode === 'COURSE' ? "Enter Subject Name" : "Enter Student Name"} 
               value={vaultInputValue} 
               onChange={(e) => setVaultInputValue(e.target.value)} 
             />
             <div className="flex gap-3">
-              <button onClick={() => setShowVaultModal(false)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black uppercase text-[10px] text-gray-500">Cancel</button>
-              <button onClick={handleVaultSave} className="flex-1 py-4 bg-[#800000] text-yellow-400 rounded-2xl font-black uppercase text-[10px] shadow-lg">Confirm</button>
+              <button onClick={() => setShowVaultModal(false)} className="flex-1 py-4 bg-gray-100 rounded-2xl font-black uppercase text-[10px] text-gray-500 hover:bg-gray-200 transition-colors">Cancel</button>
+              <button onClick={handleVaultSave} className="flex-1 py-4 bg-[#800000] text-yellow-400 rounded-2xl font-black uppercase text-[10px] shadow-lg hover:bg-red-900 transition-all">Confirm</button>
             </div>
           </div>
         </div>
@@ -525,7 +612,7 @@ export const VaultView = () => {
 
 // --- AI QUIZ LAB TAB ---
 export const QuizLabView = () => (
-  <div className="bg-white p-12 rounded-[40px] shadow-sm border border-gray-100 text-center max-w-2xl mx-auto">
+  <div className="bg-white p-12 rounded-[40px] shadow-sm border border-gray-100 text-center max-w-2xl mx-auto shadow-sm">
     <div className="bg-yellow-50 size-20 rounded-full flex items-center justify-center mx-auto mb-6 text-[#800000]">
       <Sparkles size={40} />
     </div>
